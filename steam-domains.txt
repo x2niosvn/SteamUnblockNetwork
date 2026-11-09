@@ -1,0 +1,7 @@
+# Danh sách tên miền bổ sung cho Steam Unblock Network
+# Các tên miền mặc định (Store, Community, Inventory, Hồ sơ, Avatar, API, Static CDN & CM Servers)
+# đã được tích hợp sẵn trong ứng dụng.
+# Bạn có thể thêm tên miền tùy chỉnh tại đây (mỗi dòng 1 tên miền, bỏ dấu # ở đầu dòng).
+#
+# Lưu ý: KHÔNG thêm các domain máy chủ trận đấu (Steam Game Servers / Steam Datagram Relay)
+# để đảm bảo Ping khi chơi các tựa game trên Steam luôn giữ nguyên tốc độ gốc của đường truyền mạng.

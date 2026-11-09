@@ -1,0 +1,30 @@
+# Rust build artifacts
+/target/
+Cargo.lock.bak
+
+# Compiled Windows binaries (distributed via GitHub Releases)
+*.exe
+*.dll
+*.pdb
+!icons/*.ico
+!app.ico
+
+# Runtime logs and backups
+*.log
+*.bak
+*.tmp
+hosts.steam_unblock.bak
+steam-unblock.log
+
+# Tauri and node cache
+.tauri/
+node_modules/
+dist/
+
+# IDE and OS files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db

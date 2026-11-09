@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Steam Unblock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- HEADER / CUSTOM TITLEBAR -->
+  <header class="app-header" data-tauri-drag-region>
+    <div class="header-left" data-tauri-drag-region>
+      <img src="icons/icon-32.png" alt="Logo" class="app-icon" data-tauri-drag-region>
+      <span class="app-name" data-tauri-drag-region>Steam Unblock</span>
+      <span class="status-pill" id="header-status">
+        <span class="dot"></span>
+        <span id="header-status-text">Đang kết nối</span>
+      </span>
+    </div>
+
+    <div class="header-right">
+      <!-- NÚT KIỂM TRA CÓ PHẢN HỒI THỰC TẾ -->
+      <button class="top-btn" id="btn-test" onclick="runPingTest()" title="Đo độ trễ Steam">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span id="test-btn-text">Kiểm tra</span>
+      </button>
+
+      <button class="top-btn" onclick="triggerFlush()" title="Xóa bộ đệm DNS">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+        <span>DNS</span>
+      </button>
+
+      <div class="divider"></div>
+
+      <button class="win-btn" onclick="minimizeWindow()" title="Thu nhỏ">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <button class="win-btn close" onclick="openExitDialog()" title="Đóng">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="app-container">
+    <!-- MASTER HERO CARD -->
+    <section class="master-card" id="master-card">
+      <div class="master-info">
+        <div class="master-status-tag" id="master-tag">
+          <span class="tag-dot"></span>
+          <span id="master-tag-text">ĐANG BẬT</span>
+        </div>
+        <h1 class="master-title" id="master-title">Đã mở khóa Steam</h1>
+        <p class="master-sub" id="master-sub">Độ trễ thấp • Không tăng ping game</p>
+      </div>
+
+      <button class="master-btn" id="btn-master" onclick="toggleProxy()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>
+        </svg>
+        <span id="master-btn-label">TẮT</span>
+      </button>
+    </section>
+
+    <!-- REALTIME NETWORK CHART -->
+    <section class="chart-card">
+      <div class="chart-top">
+        <div class="chart-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <span>Lưu lượng mạng Realtime</span>
+        </div>
+        <div class="chart-metrics">
+          <span class="metric-val green" id="speed-text">0.0 KB/s</span>
+          <span class="metric-val" id="traffic-text">0 KB</span>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="network-canvas" width="540" height="85"></canvas>
+      </div>
+    </section>
+
+    <!-- 2 CONTROL CARDS -->
+    <section class="controls-grid">
+      <!-- CARD 1: PROXY -->
+      <div class="control-box">
+        <div class="box-left">
+          <div class="box-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
+          </div>
+          <div>
+            <div class="box-name">SNI Proxy</div>
+            <div class="box-desc" id="proxy-desc">127.0.0.1:443</div>
+          </div>
+        </div>
+        <button class="btn" id="btn-proxy" onclick="toggleProxy()">Tắt</button>
+      </div>
+
+      <!-- CARD 2: SERVICE -->
+      <div class="control-box">
+        <div class="box-left">
+          <div class="box-icon cyan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div>
+            <div class="box-name">Dịch vụ Windows</div>
+            <div class="box-desc" id="service-desc">Chạy tự động cùng Win</div>
+          </div>
+        </div>
+        <button class="btn secondary" id="btn-service" onclick="toggleService()">Cài đặt</button>
+      </div>
+    </section>
+
+    <!-- STATUS FOOTER & SERVICES STRIP -->
+    <section class="services-strip">
+      <div class="strip-node"><span class="dot green"></span><span>Store</span></div>
+      <div class="strip-node"><span class="dot green"></span><span>Community</span></div>
+      <div class="strip-node"><span class="dot green"></span><span>Avatar / Name</span></div>
+      <div class="strip-node"><span class="dot green"></span><span>CM WebSocket</span></div>
+    </section>
+
+    <!-- MINIMAL LOGS PANEL (COLLAPSIBLE / 50 ITEMS) -->
+    <section class="logs-card">
+      <div class="logs-header">
+        <span class="logs-title">Nhật ký (50 mới nhất)</span>
+        <div class="logs-actions">
+          <button class="mini-btn" onclick="clearLogsUi()">Xóa log</button>
+          <button class="mini-btn" onclick="copyLogs()">Sao chép</button>
+        </div>
+      </div>
+      <div class="logs-body" id="logs-feed">
+        <div class="log-empty">Chưa có nhật ký. Bấm "Kiểm tra" để đo kết nối.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- EXIT DIALOG -->
+  <div class="modal-overlay" id="exit-modal" style="display: none;">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Đóng ứng dụng</h3>
+        <button class="modal-x" onclick="closeExitDialog()">✕</button>
+      </div>
+      <p class="modal-msg">Chọn cách đóng ứng dụng:</p>
+      <div class="modal-btns">
+        <button class="choice-btn primary" onclick="confirmMinimizeToTray()">
+          <strong>Chạy ngầm ở Khay Hệ Thống</strong>
+          <small>Duy trì mở khóa Steam, mở lại từ góc Taskbar</small>
+        </button>
+        <button class="choice-btn danger" onclick="confirmExitApp()">
+          <strong>Thoát hoàn toàn</strong>
+          <small>Dừng proxy, khôi phục file hosts gốc</small>
+        </button>
+      </div>
+      <div class="modal-foot">
+        <label class="remember-chk">
+          <input type="checkbox" id="chk-remember-choice">
+          <span>Ghi nhớ</span>
+        </label>
+        <button class="cancel-link" onclick="closeExitDialog()">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
